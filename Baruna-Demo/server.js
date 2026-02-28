@@ -3,10 +3,18 @@ const fastify = require('fastify')({ logger: true });
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 
+const fs = require('fs');
+
 const PORT = process.env.PORT || 3000;
 const DEVICE_API_KEY = "DEMO_SECURE_TOKEN_2026";
 
 async function main() {
+    // Ensure Database directory exists
+    const dbDir = path.join(__dirname, 'Database');
+    if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+    }
+
     const db = await open({
         filename: './Database/demo_database.db',
         driver: sqlite3.Database
