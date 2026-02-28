@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baruna Demo Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-4">
+    <div class="container">
+        <h2 class="fw-bold text-center mb-4">RFID Attendance Demo</h2>
+
+        <div class="row">
+            <!-- Hardware Simulator -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Virtual RFID Scanner</h5>
+                        <p class="text-muted small">Use these buttons to simulate a hardware scan if you don't have an ESP32.</p>
+                        <button onclick="simulateScan('12345678')" class="btn btn-primary w-100 mb-2">Scan Demo Student 1</button>
+                        <button onclick="simulateScan('87654321')" class="btn btn-secondary w-100">Scan Demo Student 2</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="col-md-8">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Real-time Logs</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                </tr>
+                            </thead>
+                            <tbody id="log-table">
+                                <tr><td colspan="3" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_TOKEN = "DEMO_SECURE_TOKEN_2026";
+
+        async function simulateScan(uid) {
+            try {
+                const res = await fetch('/api/absen', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-device-token': API_TOKEN
+                    },
+                    body: JSON.stringify({ rfid_uid: uid, device_id: "Virtual-Sim" })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Access Granted: ${data.name}`);
+                    loadLogs();
+                } else {
+                    alert(`Access Denied: ${data.message}`);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadLogs() {
+            try {
+                const res = await fetch('/api/logs');
+                const data = await res.json();
+                const tbody = document.getElementById('log-table');
+                tbody.innerHTML = data.map(log => `
+                    <tr>
+                        <td>${log.timestamp.split(' ')[1]}</td>
+                        <td>${log.name || 'Unknown'}</td>
+                        <td>${log.class || '-'}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        setInterval(loadLogs, 3000);
+        loadLogs();
+    </script>
+</body>
+</html>
