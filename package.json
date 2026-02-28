@@ -18,7 +18,9 @@
     "@fastify/session": "^11.1.1",
     "@fastify/static": "^9.0.0",
     "dotenv": "^17.3.1",
-    "fastify": "^5.7.4"
+    "fastify": "^5.7.4",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
