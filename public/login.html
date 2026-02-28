@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #bg-slideshow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            filter: blur(4px);
+            transform: scale(1.1);
+        }
+        .bg-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 2s ease-in-out;
+            opacity: 0;
+        }
+        .bg-layer.active {
+            opacity: 1;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+        .login-card {
+            border: none;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        .btn-primary {
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: bold;
+            background: #4e73df;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div id="bg-slideshow">
+    <div class="bg-layer active" style="background-image: url('/properties/bg1.jpg');"></div>
+    <div class="bg-layer" style="background-image: url('/properties/bg2.jpg');"></div>
+    <div class="bg-layer" style="background-image: url('/properties/bg3.jpg');"></div>
+    <div class="bg-layer" style="background-image: url('/properties/bg4.jpg');"></div>
+</div>
+<div class="overlay"></div>
+
+<div class="card login-card p-4">
+    <div class="text-center mb-4">
+        <img src="/properties/logo.png" alt="Logo" style="width: 100px;">
+        <h4 class="fw-bold mt-2">Dashboard Absensi</h4>
+        <p class="text-muted small">SMKS 1 Barunawati</p>
+    </div>
+    <form id="loginForm">
+        <div class="mb-3">
+            <label class="fw-bold small">Username</label>
+            <input type="text" id="username" class="form-control" placeholder="Masukkan Username" required>
+        </div>
+        <div class="mb-4">
+            <label class="fw-bold small">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="Masukkan Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mb-3 shadow">Login</button>
+        <div id="errorMsg" class="text-danger small text-center d-none">Username/Password Salah!</div>
+    </form>
+</div>
+
+<script>
+    const layers = document.querySelectorAll('.bg-layer');
+    let currentLayer = 0;
+
+    function swapBackground() {
+        layers[currentLayer].classList.remove('active');
+        currentLayer = (currentLayer + 1) % layers.length;
+        layers[currentLayer].classList.add('active');
+    }
+
+    setInterval(swapBackground, 7000);
+    document.getElementById('loginForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        if (res.ok) {
+            window.location.href = '/dashboard';
+        } else {
+            document.getElementById('errorMsg').classList.remove('d-none');
+        }
+    };
+</script>
+</body>
+</html>

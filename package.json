@@ -1,0 +1,26 @@
+{
+  "name": "barunaapi",
+  "version": "beta-1.5.2",
+  "description": "Sistem API untuk Absensi Otomatis SMKS 1 Barunawati",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/formbody": "^8.0.2",
+    "@fastify/session": "^11.1.1",
+    "@fastify/static": "^9.0.0",
+    "dotenv": "^17.3.1",
+    "fastify": "^5.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

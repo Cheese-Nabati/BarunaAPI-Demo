@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Laporan Akumulasi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.04);
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.05);
+        }
+        .badge-count {
+             font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-dark" href="#">Laporan Akumulasi</a>
+        <a href="/dashboard" class="btn btn-outline-primary rounded-pill fw-bold px-3">
+            <i class="bi bi-arrow-left me-1"></i>Kembali
+        </a>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="card">
+        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+            <h5 class="card-title fw-bold mb-0">Data Rekap Bulanan</h5>
+            <a href="/api/recap/csv" class="btn btn-success rounded-pill fw-bold px-3">
+                <i class="bi bi-download me-1"></i>Download CSV
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Bulan/Tahun</th>
+                            <th>RFID UID</th>
+                            <th>Nama Siswa</th>
+                            <th>Kelas</th>
+                            <th class="text-center">Total Kehadiran</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rekap-table">
+                         <tr><td colspan="5" class="text-center p-5"><div class="spinner-border text-primary"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="py-4 mt-4 text-center">
+    <small class="text-muted">Sistem Monitoring Absensi © 2025 SMKS 1 Barunawati</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    async function loadRekap() {
+        const table = document.getElementById('rekap-table');
+        try {
+            const res = await fetch('/api/recap');
+            const data = await res.json();
+            
+            if (!data || data.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <h6 class="text-muted">Belum ada data rekap.</h6>
+                            <p class="small">Jalankan proses 'Akumulasi Bulanan' di dashboard utama.</p>
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            table.innerHTML = data.map(r => `
+                <tr>
+                    <td><span class="fw-bold">${r.month_year}</span></td>
+                    <td><code>${r.rfid_uid}</code></td>
+                    <td>${r.name}</td>
+                    <td><span class="badge bg-secondary">${r.class}</span></td>
+                    <td class="text-center">
+                        <span class="badge bg-success badge-count rounded-pill">${r.total_attendance} Hari</span>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            console.error("Gagal memuat data:", err);
+            table.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-5">Gagal menghubungi server.</td></tr>`;
+        }
+    }
+
+    window.onload = loadRekap;
+</script>
+</body>
+</html>
