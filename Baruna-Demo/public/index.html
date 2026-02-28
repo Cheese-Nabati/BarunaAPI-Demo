@@ -76,13 +76,17 @@
                 const res = await fetch('/api/logs');
                 const data = await res.json();
                 const tbody = document.getElementById('log-table');
-                tbody.innerHTML = data.map(log => `
-                    <tr>
-                        <td>${log.timestamp.split(' ')[1]}</td>
-                        <td>${log.name || 'Unknown'}</td>
-                        <td>${log.class || '-'}</td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = data.map(log => {
+                    // Extract HH:MM from "YYYY-MM-DD HH:MM:SS"
+                    const timeOnly = log.timestamp ? log.timestamp.split(' ')[1].substring(0, 5) : '--:--';
+                    return `
+                        <tr>
+                            <td><span class="badge bg-dark">${timeOnly}</span></td>
+                            <td><strong>${log.name || 'Unknown'}</strong></td>
+                            <td>${log.class || '-'}</td>
+                        </tr>
+                    `;
+                }).join('');
             } catch (err) {
                 console.error(err);
             }

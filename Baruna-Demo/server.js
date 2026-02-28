@@ -65,10 +65,14 @@ async function main() {
     // API: Fetch Logs (for Dashboard)
     fastify.get('/api/logs', async () => {
         return await db.all(`
-            SELECT attendance_logs.*, students.name, students.class 
+            SELECT 
+                attendance_logs.id,
+                datetime(attendance_logs.timestamp, 'localtime') AS timestamp,
+                students.name, 
+                students.class 
             FROM attendance_logs 
             LEFT JOIN students ON attendance_logs.rfid_uid = students.rfid_uid 
-            ORDER BY timestamp DESC LIMIT 10
+            ORDER BY attendance_logs.timestamp DESC LIMIT 10
         `);
     });
 
