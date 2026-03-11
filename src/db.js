@@ -56,6 +56,8 @@ async function initDB() {
 
     // Migrations / Alter tables
     try { await db.exec(`ALTER TABLE devices ADD COLUMN display_text TEXT DEFAULT 'Selamat Datang!'`); } catch (e) {}
+    try { await db.exec(`ALTER TABLE devices ADD COLUMN mode TEXT DEFAULT 'READER'`); } catch (e) {}
+    try { await db.exec(`ALTER TABLE devices ADD COLUMN power_status INTEGER DEFAULT 1`); } catch (e) {}
     try { await db.exec(`ALTER TABLE devices ADD COLUMN last_scanned_uid TEXT`); } catch (e) {}
     try { await db.exec(`ALTER TABLE attendance_logs ADD COLUMN date TEXT`); } catch (e) {}
 
