@@ -1,6 +1,9 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-const fastify = require('fastify')({ logger: true });
+const fastify = require('fastify')({ 
+    logger: true,
+    ignoreTrailingSlash: true 
+});
 const { initializeApp } = require('./src/app_init');
 
 async function main() {

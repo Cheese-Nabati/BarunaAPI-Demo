@@ -1,5 +1,7 @@
 
 
+const { WIB_MODIFIER, getWIBISOString, getWIBDateString } = require('../utils/time');
+
 async function getRoutes(fastify, options) {
     const db = fastify.db;
 
@@ -21,13 +23,13 @@ fastify.get('/api/device/ping', async (request, reply) => {
 
         return { 
             status: "ONLINE", 
-            server_time: new Date().toISOString(),
+            server_time: getWIBISOString(),
             mode: device ? device.mode : 'READER',
             power_status: device ? device.power_status : 1,
             display_text: device ? device.display_text : 'Selamat Datang!'
         };
     } catch (err) {
-        return { status: "ONLINE", server_time: new Date().toISOString(), mode: 'READER', power_status: 1 };
+        return { status: "ONLINE", server_time: getWIBISOString(), mode: 'READER', power_status: 1 };
     }
 });
 
@@ -66,7 +68,7 @@ fastify.get('/logout', async (request, reply) => {
             return await fastify.db.all(`
         SELECT 
             attendance_logs.id,
-            datetime(attendance_logs.timestamp, 'localtime') AS timestamp, 
+            datetime(attendance_logs.timestamp, '${WIB_MODIFIER}') AS timestamp, 
             students.name, 
             students.class,
             attendance_logs.device_id
@@ -78,7 +80,7 @@ fastify.get('/logout', async (request, reply) => {
 
     fastify.get('/api/admin/device-activities', async (request, reply) => {
         return await db.all(`
-            SELECT id, device_id, activity, datetime(timestamp, 'localtime') as timestamp 
+            SELECT id, device_id, activity, datetime(timestamp, '${WIB_MODIFIER}') as timestamp 
             FROM device_activities 
             ORDER BY timestamp DESC LIMIT 50
         `);
@@ -95,7 +97,7 @@ fastify.get('/logout', async (request, reply) => {
 
     fastify.get('/api/admin/recap-bulanan', async (request, reply) => {
         try {
-            const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM Date
+            const currentMonth = getWIBDateString().slice(0, 7); // YYYY-MM Date
             
             await db.run(`
                 INSERT INTO monthly_results (rfid_uid, month_year, total_attendance)
@@ -145,7 +147,7 @@ fastify.get('/logout', async (request, reply) => {
             
             const exportData = {
                 description: "Exported Student UIDs for NFC Emulation",
-                generated_at: new Date().toISOString(),
+                generated_at: getWIBISOString(),
                 students: students.map(s => ({
                     uid: s.rfid_uid,
                     name: s.name,

@@ -1,4 +1,7 @@
-const fastify = require('fastify')({ logger: true });
+const fastify = require('fastify')({ 
+    logger: true,
+    ignoreTrailingSlash: true 
+});
 const { initializeApp } = require('../src/app_init');
 
 let initialized = false;

@@ -1,3 +1,5 @@
+const { getWIBDateString, WIB_MODIFIER } = require('../utils/time');
+
 async function postRoutes(fastify, options) {
     const db = fastify.db;
     
@@ -72,7 +74,7 @@ fastify.post('/api/login', async (request, reply) => {
             if (!student) {
                 return reply.status(404).send({ success: false, message: "Bukan Siswa" });
             }
-            const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+            const today = getWIBDateString(); // Format: YYYY-MM-DD
             const existingLog = await db.get(
                 'SELECT id FROM attendance_logs WHERE rfid_uid = ? AND date = ?',
                 [rfid_uid, today]
@@ -154,7 +156,7 @@ fastify.post('/api/login', async (request, reply) => {
 
     // --- DEVICE MANAGEMENT ---
     fastify.get('/api/admin/devices', async (request, reply) => {
-        return await db.all("SELECT *, datetime(last_seen, 'localtime') AS last_seen FROM devices ORDER BY last_seen DESC");
+        return await db.all(`SELECT *, datetime(last_seen, '${WIB_MODIFIER}') AS last_seen FROM devices ORDER BY last_seen DESC`);
     });
 
     fastify.post('/api/admin/devices/update', async (request, reply) => {
