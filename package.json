@@ -2,7 +2,7 @@
   "name": "barunaapi",
   "version": "beta-1.5.2",
   "description": "Sistem API untuk Absensi Otomatis SMKS 1 Barunawati",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
