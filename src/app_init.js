@@ -8,22 +8,36 @@ async function initializeApp(fastify) {
 
     fastify.register(require('@fastify/cookie'));
     fastify.register(require('@fastify/session'), {
-        secret: process.env.SESSION_SECRET || 'PLEASE_SET_A_SESSION_SECRET_IN_ENV',
-        cookie: { secure: false }
+        secret: process.env.SESSION_SECRET || 'BARUNA_DEMO_SECRET_KEY_2026_LONG_STRING',
+        cookie: { 
+            secure: false, // Set to false for demo ease, or auto-detect
+            maxAge: 86400 * 1000, // 24 hours
+            path: '/'
+        },
+        saveUninitialized: true // Ensure cookie is sent even if session is empty
     });
 
     fastify.addHook('preHandler', async (request, reply) => {
-        const { url, method } = request;
-        const cleanUrl = url.split('?')[0].replace(/\/$/, ""); // Normalize URL
+        const { url } = request;
+        let cleanUrl = url.split('?')[0];
+        
+        // Remove trailing slash except for the root /
+        if (cleanUrl.length > 1 && cleanUrl.endsWith('/')) {
+            cleanUrl = cleanUrl.slice(0, -1);
+        }
 
+        // Public routes
         if (cleanUrl === '/login' || cleanUrl === '/api/login' || cleanUrl.startsWith('/properties')) return;
 
-        // These endpoints allow EITHER a valid session OR a valid Device Token
+        // --- AUTHENTICATION LOGIC ---
+        const isAuthenticated = request.session && request.session.authenticated;
+
+        // Hardware Endpoints (Special Auth: Session OR Token)
         const hardwareEndpoints = ['/api/absen', '/api/students', '/api/device/ping', '/api/device/report-scan', '/api/device/log'];
         const isHardwareApi = hardwareEndpoints.includes(cleanUrl);
         
         if (isHardwareApi) {
-            if (request.session.authenticated) return; // Allow if logged in via browser
+            if (isAuthenticated) return; // Allow if logged in via browser
             
             const token = request.headers['x-device-token'];
             const expectedToken = process.env.DEVICE_API_KEY || 'BARUNA_SECURE_TOKEN_2026';
@@ -34,10 +48,12 @@ async function initializeApp(fastify) {
             return reply.status(403).send({ success: false, message: "Invalid Device Token" });
         }
 
+        // Protected UI Routes
         const protectedRoutes = ['/', '/dashboard', '/settings', '/student-view', '/recap-view', '/students-view', '/api'];
         const isProtected = protectedRoutes.some(p => cleanUrl === p || cleanUrl.startsWith(p + '/'));
 
-        if (isProtected && !request.session.authenticated) {
+        if (isProtected && !isAuthenticated) {
+            console.log(`[AUTH] Unauthorized access attempt to: ${cleanUrl}. Redirecting to /login`);
             if (cleanUrl.startsWith('/api')) {
                 return reply.status(401).send({ success: false, message: "Unauthorized Session" });
             }
