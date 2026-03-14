@@ -37,6 +37,10 @@ async function getRoutes(fastify, options) {
     });
 
     fastify.get('/login', async (request, reply) => {
+        console.log('[DEBUG] Body:', request.body);
+        console.log('[DEBUG] Content-Type:', request.headers['content-type']);
+        console.log('[DEBUG] expectedUser:', process.env.ADMIN_USERNAME || 'admin');
+        console.log('[DEBUG] expectedPass:', process.env.ADMIN_PASSWORD || 'admin123');
         if (request.session.get('authenticated')) return reply.redirect('/dashboard');
         return reply.sendFile('login.html');
     });
@@ -172,6 +176,8 @@ async function getRoutes(fastify, options) {
             return reply.status(500).send({ success: false, error: err.message });
         }
     });
+
+    
 }
 
 module.exports = getRoutes;
