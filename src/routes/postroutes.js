@@ -37,7 +37,7 @@ async function postRoutes(fastify, options) {
 
         const { username, password } = request.body;
         const expectedUser = (process.env.ADMIN_USERNAME || 'admin').trim();
-        const expectedPass = (process.env.ADMIN_PASSWORD || 'CHANGE_ME_IN_ENV').trim();
+        const expectedPass = (process.env.ADMIN_PASSWORD || 'admin123').trim();
         const inputUser = (username || '').trim();
         const inputPass = (password || '').trim();
 
