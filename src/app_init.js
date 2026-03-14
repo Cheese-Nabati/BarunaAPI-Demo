@@ -6,17 +6,18 @@ async function initializeApp(fastify) {
     const db = await initDB();
     fastify.decorate('db', db);
 
-    fastify.register(require('@fastify/secure-session'), {
-        secret: process.env.SESSION_SECRET || 'BARUNA_SECURE_DEMO_2026_VERY_LONG_STRING_32_CHARS_MIN',
-        salt: 'mq9H98p7987987P98798QwertYuiop',
-        cookie: {
-            path: '/',
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 86400
-        }
-    });
+fastify.register(require('@fastify/cookie'));
+fastify.register(require('@fastify/session'), {
+    secret: process.env.SESSION_SECRET || 'BARUNA_SECURE_DEMO_2026_VERY_LONG_STRING_32_CHARS_MIN',
+    cookie: {
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 86400
+    },
+    saveUninitialized: false
+});
 
     fastify.addHook('preHandler', async (request, reply) => {
         const { url } = request;
