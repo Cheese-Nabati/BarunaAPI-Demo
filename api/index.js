@@ -1,37 +1,26 @@
-const app = Fastify({
-    logger: true,
-    routerOptions: {
-        ignoreTrailingSlash: true
-    }
-});
+const Fastify = require('fastify');
+const { initializeApp } = require('../src/app_init');
 
 let fastify;
 
 async function buildApp() {
-  const app = Fastify({
-    logger: true,
-    ignoreTrailingSlash: true
-  });
+    const app = Fastify({
+        logger: true,
+        routerOptions: {
+            ignoreTrailingSlash: true
+        }
+    });
 
-  await initializeApp(app);
-  await app.ready();
+    await initializeApp(app);
+    await app.ready();
 
-  return app;
+    return app;
 }
-
-module.exports = async (req, res) => {
-  if (!fastify) {
-    fastify = await buildApp();
-  }
-
-  fastify.server.emit('request', req, res);
-};
 
 module.exports = async (req, res) => {
     console.log('[RAW] method:', req.method);
     console.log('[RAW] url:', req.url);
-    console.log('[RAW] headers:', JSON.stringify(req.headers));
-    console.log('[RAW] body:', req.body);
+    console.log('[RAW] content-type:', req.headers['content-type']);
 
     if (!fastify) {
         fastify = await buildApp();
