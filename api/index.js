@@ -26,3 +26,16 @@ module.exports = async (req, res) => {
 
   fastify.server.emit('request', req, res);
 };
+
+module.exports = async (req, res) => {
+    console.log('[RAW] method:', req.method);
+    console.log('[RAW] url:', req.url);
+    console.log('[RAW] headers:', JSON.stringify(req.headers));
+    console.log('[RAW] body:', req.body);
+
+    if (!fastify) {
+        fastify = await buildApp();
+    }
+
+    fastify.server.emit('request', req, res);
+};
