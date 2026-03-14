@@ -49,10 +49,7 @@ fastify.post('/api/login', async (request, reply) => {
     console.log(`[DEBUG] Comparing against: "${expectedUser}" / "${expectedPass}"`);
 
     if (inputUser === expectedUser && inputPass === expectedPass) {
-        request.session.authenticated = true;
-        if (request.session.save) {
-            await request.session.save();
-        }
+        request.session.set('authenticated', true);
         console.log(`[AUTH] Login SUCCESS for user: ${username}`);
         return { success: true };
     } else {

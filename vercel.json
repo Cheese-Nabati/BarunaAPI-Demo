@@ -14,12 +14,12 @@
   ],
   "routes": [
     {
-      "src": "/properties/(.*)",
-      "dest": "/public/properties/$1"
+      "src": "/public/(.*)",
+      "dest": "/public/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "api/index.js"
+      "dest": "/api/index.js"
     }
   ]
 }

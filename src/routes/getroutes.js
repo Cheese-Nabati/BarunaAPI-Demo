@@ -34,12 +34,12 @@ fastify.get('/api/device/ping', async (request, reply) => {
 });
 
 fastify.get('/login', async (request, reply) => {
-    if (request.session.authenticated) return reply.redirect('/dashboard');
+    if (request.session.get('authenticated')) return reply.redirect('/dashboard');
     return reply.sendFile('login.html');
 });
 
 fastify.get('/logout', async (request, reply) => {
-    request.session.destroy();
+    request.session.delete();
     return reply.redirect('/login');
 });
 
