@@ -28,7 +28,7 @@ fastify.register(require('@fastify/session'), {
         }
 
         if (cleanUrl === '/login' || cleanUrl === '/api/login' || cleanUrl.startsWith('/properties')) return;
-        const isAuthenticated = request.session && request.session.get('authenticated');
+        const isAuthenticated = request.session && request.session.authenticated;
 
         const hardwareEndpoints = ['/api/absen', '/api/students', '/api/device/ping', '/api/device/report-scan', '/api/device/log'];
         const isHardwareApi = hardwareEndpoints.includes(cleanUrl);

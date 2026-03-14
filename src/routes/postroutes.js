@@ -45,7 +45,7 @@ async function postRoutes(fastify, options) {
         console.log(`[DEBUG] Comparing against: "${expectedUser}" / "${expectedPass}"`);
 
         if (inputUser === expectedUser && inputPass === expectedPass) {
-            request.session.set('authenticated', true);
+            request.session.authenticated = true;
             console.log(`[AUTH] Login SUCCESS for user: ${username}`);
             return { success: true };
         } else {
