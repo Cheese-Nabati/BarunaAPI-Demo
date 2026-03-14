@@ -6,18 +6,15 @@ async function initializeApp(fastify) {
     const db = await initDB();
     fastify.decorate('db', db);
 
-    // Using @fastify/secure-session for Vercel/Serverless
-    // It's stateless (encrypted in the cookie), so it works reliably on Vercel
     fastify.register(require('@fastify/secure-session'), {
-        // In production, set SESSION_SECRET as a long random string (32+ chars)
         secret: process.env.SESSION_SECRET || 'BARUNA_SECURE_DEMO_2026_VERY_LONG_STRING_32_CHARS_MIN',
-        salt: 'mq9H98p7987987P98798QwertYuiop', // 16 chars salt
+        salt: 'mq9H98p7987987P98798QwertYuiop',
         cookie: {
             path: '/',
-            httpOnly: true, // Security: Prevent JS access
-            secure: process.env.NODE_ENV === 'production', // Use HTTPS in prod
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 86400 // 24 hours in seconds
+            maxAge: 86400
         }
     });
 
@@ -30,8 +27,6 @@ async function initializeApp(fastify) {
         }
 
         if (cleanUrl === '/login' || cleanUrl === '/api/login' || cleanUrl.startsWith('/properties')) return;
-
-        // Check session (secure-session uses request.session.get/set)
         const isAuthenticated = request.session && request.session.get('authenticated');
 
         const hardwareEndpoints = ['/api/absen', '/api/students', '/api/device/ping', '/api/device/report-scan', '/api/device/log'];
