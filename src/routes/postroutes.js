@@ -40,19 +40,19 @@ async function postRoutes(fastify, options) {
         const expectedPass = (process.env.ADMIN_PASSWORD || 'admin123').trim();
         const inputUser = (username || '').trim();
         const inputPass = (password || '').trim();
+        
+    if (inputUser === expectedUser && inputPass === expectedPass) {
+        request.session.authenticated = true;
 
-        console.log(`[DEBUG] Attempting login with: "${inputUser}" / "${inputPass}"`);
-        console.log(`[DEBUG] Comparing against: "${expectedUser}" / "${expectedPass}"`);
+        // ✅ Paksa save session sebelum reply
+        await request.session.save();
 
-        if (inputUser === expectedUser && inputPass === expectedPass) {
-            request.session.authenticated = true;
-            console.log(`[AUTH] Login SUCCESS for user: ${username}`);
-            return { success: true };
-        } else {
-            console.log(`[AUTH] Login FAILED for user: ${username}`);
-            return reply.status(401).send({ success: false, message: "Invalid credentials" });
-        }
-    });
+        console.log('[AUTH] Login SUCCESS, session:', request.session);
+        return { success: true };
+    } else {
+        return reply.status(401).send({ success: false, message: "Invalid credentials" });
+    }
+});
 
     fastify.post('/api/absen', async (request, reply) => {
         const { rfid_uid, device_id } = request.body;

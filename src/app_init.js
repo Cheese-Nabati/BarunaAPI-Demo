@@ -2,11 +2,11 @@ const path = require('path');
 require('dotenv').config();
 const { initDB } = require('./db');
 
+
+
 async function initializeApp(fastify) {
     const db = await initDB();
     fastify.decorate('db', db);
-
-    // ✅ JSON Parser — WAJIB ada sebelum routes
     fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
         try {
             const json = JSON.parse(body);
@@ -23,7 +23,7 @@ async function initializeApp(fastify) {
         cookie: {
             path: '/',
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             sameSite: 'lax',
             maxAge: 86400
         },
@@ -38,9 +38,10 @@ async function initializeApp(fastify) {
             cleanUrl = cleanUrl.slice(0, -1);
         }
 
+        
         if (cleanUrl === '/login' || cleanUrl === '/api/login' || cleanUrl.startsWith('/properties')) return;
-
-        const isAuthenticated = request.session && request.session.authenticated;
+        console.log(`[SESSION] url: ${cleanUrl}, session:`, request.session);
+        const isAuthenticated = request.session && request.session.authenticated === true;
 
         const hardwareEndpoints = ['/api/absen', '/api/students', '/api/device/ping', '/api/device/report-scan', '/api/device/log'];
         const isHardwareApi = hardwareEndpoints.includes(cleanUrl);
@@ -69,6 +70,8 @@ async function initializeApp(fastify) {
         }
     });
 
+
+    
     fastify.register(require('@fastify/formbody'));
     fastify.register(require('@fastify/static'), {
         root: path.join(__dirname, '..', 'public'),
