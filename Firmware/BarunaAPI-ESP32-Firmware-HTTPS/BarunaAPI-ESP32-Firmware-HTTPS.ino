@@ -16,7 +16,7 @@ const char* password = "NabatiKejuIOTProject";
 
 String baseUrl      = "https://demo-barunapi.vercel.app";
 String deviceID     = "ESP32 - PROTOTYPE"; //Ganti Sesuai Kebutuhan/Lokasi 
-const String deviceToken = "DEMO_SECURE_TOKEN_2026";
+const String deviceToken = "BARUNA_SECURE_TOKEN_2026";
 
 #define RFID_SDA_PIN 14
 #define RFID_RST_PIN 27 
